@@ -1,18 +1,17 @@
 import { Request, Response } from "express";
 
-import { CreateProductUseCase } from "../../application/CreateProductUseCase";
-//import { Product } from "../../domain/Product";
+import { CreateUserUseCase } from "../../application/CreateUserUseCase";
 
-export class CreateProductController {
-  constructor(readonly createProductUseCase: CreateProductUseCase) {}
+export class CreateUserController {
+  constructor(readonly createUserUseCase: CreateUserUseCase) {}
 
   async run(req: Request, res: Response) {
     const data = req.body;
     try {
-      const product = await this.createProductUseCase.run(
+      const product = await this.createUserUseCase.run(
         data.name,
-        data.description,
-        data.price
+        data.email,
+        data.password
       );
 
       if (product)
@@ -22,8 +21,8 @@ export class CreateProductController {
           data: {
             id: product?.id,
             name: product?.name,
-            description: product?.description,
-            price: product?.price,
+            email: product?.email,
+            password: product?.password,
           },
         });
       else

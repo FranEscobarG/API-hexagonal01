@@ -1,21 +1,21 @@
 import { query } from "../../database/mysql";
-import { Product } from "../domain/Product";
-import { ProductRepository } from "../domain/ProductRepository";
+import { User } from "../domain/User";
+import { UserRepository } from "../domain/UserRepository";
 
-export class MysqlProductRepository implements ProductRepository {
-  async getAll(): Promise<Product[] | null> {
-    const sql = "SELECT * FROM product";
+export class MysqlUserRepository implements UserRepository {
+  async getAll(): Promise<User[] | null> {
+    const sql = "SELECT * FROM users";
     try {
       const [data]: any = await query(sql, []);
       const dataProducts = Object.values(JSON.parse(JSON.stringify(data)));
 
       return dataProducts.map(
         (product: any) =>
-          new Product(
+          new User(
             product.id,
             product.name,
-            product.description,
-            product.price
+            product.email,
+            product.password
           )
       );
     } catch (error) {
@@ -23,15 +23,15 @@ export class MysqlProductRepository implements ProductRepository {
     }
   }
 
-  async getById(userId: number): Promise<Product | null> {
-    const sql = "SELECT * FROM product WHERE id=?";
+  async getById(userId: number): Promise<User | null> {
+    const sql = "SELECT * FROM users WHERE id=?";
     const params: any[] = [userId];
     try {
       const [result]: any = await query(sql, params);
       //El objeto Result es un objeto que contiene info generada de la bd
       /*No es necesaria la validación de la cantidad de filas afectadas, ya que, al
             estar dentro de un bloque try/catch si hay error se captura en el catch */
-      return new Product(
+      return new User(
         result[0].id,
         result[0].name,
         result[0].description,
@@ -42,20 +42,20 @@ export class MysqlProductRepository implements ProductRepository {
     }
   }
 
-  async createProduct(
+  async createUser(
     name: string,
-    description: string,
-    price: number
-  ): Promise<Product | null> {
+    email: string,
+    password: string
+  ): Promise<User | null> {
     const sql =
-      "INSERT INTO product (name, description, price) VALUES (?, ?, ?)";
-    const params: any[] = [name, description, price];
+      "INSERT INTO users (name, description, price) VALUES (?, ?, ?)";
+    const params: any[] = [name, email, password];
     try {
       const [result]: any = await query(sql, params);
       //El objeto Result es un objeto que contiene info generada de la bd
       /*No es necesaria la validación de la cantidad de filas afectadas, ya que, al
             estar dentro de un bloque try/catch si hay error se captura en el catch */
-      return new Product(result.insertId, name, description, price);
+      return new User(result.insertId, name, email, password);
     } catch (error) {
       return null;
     }
